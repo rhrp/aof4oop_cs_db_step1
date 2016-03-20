@@ -92,35 +92,50 @@ public class MigrateDBStep1
 			}
 			if(p instanceof Principal)
 			{
-				rhp.aof4oop.cs.datamodel_b.Principal p_b=new rhp.aof4oop.cs.datamodel_b.Principal(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
-				db.store(p_b);
+				db.store(convertPrincipal(p,middle_name,last_name));
 			}
 			else if(p instanceof Coordinator)
 			{
-				rhp.aof4oop.cs.datamodel_b.Coordinator p_b=new rhp.aof4oop.cs.datamodel_b.Coordinator(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
-				db.store(p_b);
+				db.store(convertCoordinator(p,middle_name,last_name));
 			}
 			else if(p instanceof ExamOfficer)
 			{
-				rhp.aof4oop.cs.datamodel_b.ExamOfficer p_b=new rhp.aof4oop.cs.datamodel_b.ExamOfficer(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
-				db.store(p_b);
-			}
-			else if(p instanceof Tutor)
-			{
-				rhp.aof4oop.cs.datamodel_b.Tutor p_b=new rhp.aof4oop.cs.datamodel_b.Tutor(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
-				db.store(p_b);
+				db.store(convertExamOfficer(p,middle_name,last_name));
 			}
 			else if(p instanceof Moderator)
 			{
-				rhp.aof4oop.cs.datamodel_b.Moderator p_b=new rhp.aof4oop.cs.datamodel_b.Moderator(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
-				db.store(p_b);
+				db.store(convertModerator(p,middle_name,last_name));
 			}
+			else if(p instanceof Tutor)
+			{
+				db.store(convertTutor(p,middle_name,last_name));
+			}			
 			else
 			{
 				throw new Exception("Unexpected object type!!!");
 			}
 			db.delete(p);
 		}
+	}
+	private static rhp.aof4oop.cs.datamodel_b.Principal convertPrincipal(Person p,String middle_name,String last_name)
+	{
+		return  new rhp.aof4oop.cs.datamodel_b.Principal(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
+	}
+	private static rhp.aof4oop.cs.datamodel_b.Coordinator convertCoordinator(Person p,String middle_name,String last_name)
+	{
+		return  new rhp.aof4oop.cs.datamodel_b.Coordinator(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
+	}
+	private static rhp.aof4oop.cs.datamodel_b.ExamOfficer convertExamOfficer(Person p,String middle_name,String last_name)
+	{
+		return  new rhp.aof4oop.cs.datamodel_b.ExamOfficer(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
+	}
+	private static rhp.aof4oop.cs.datamodel_b.Moderator convertModerator(Person p,String middle_name,String last_name)
+	{
+		return  new rhp.aof4oop.cs.datamodel_b.Moderator(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
+	}
+	private static rhp.aof4oop.cs.datamodel_b.Tutor convertTutor(Person p,String middle_name,String last_name)
+	{
+		return  new rhp.aof4oop.cs.datamodel_b.Tutor(p.getTitle(),p.getFirstName(),middle_name,last_name,p.getAddress(),p.getPostCode(),p.getTelephoneNumber(),p.getFaxNumber(),p.getMobileNumber(),p.isPassedD32Qualification(),p.isPassedD34Qualification(),p.isPassedD36Qualification());
 	}
 	/**
 	 * Drop classes in Version A
@@ -130,16 +145,21 @@ public class MigrateDBStep1
 		System.out.print("Dropping classes in version A...");
 		//Dropping earlier class definitions in the database configuration
 		EmbeddedConfiguration cfg = Db4oEmbedded.newConfiguration();
-		cfg.common().objectClass(Student.class).rename("rhp.trash.Student");
-		cfg.common().objectClass(Person.class).rename("rhp.trash.Person");
-		cfg.common().objectClass(Principal.class).rename("rhp.trash.Principal");
-		cfg.common().objectClass(Coordinator.class).rename("rhp.trash.Coordinator");
-		cfg.common().objectClass(ExamOfficer.class).rename("rhp.trash.ExamOfficer");
-		cfg.common().objectClass(Tutor.class).rename("rhp.trash.Tutor");
-		cfg.common().objectClass(Moderator.class).rename("rhp.trash.Moderator");
+		dropClassesVersion(cfg,Student.class);
+		dropClassesVersion(cfg,Person.class);
+		dropClassesVersion(cfg,Principal.class);
+		dropClassesVersion(cfg,Coordinator.class);
+		dropClassesVersion(cfg,ExamOfficer.class);
+		dropClassesVersion(cfg,Moderator.class);
+		dropClassesVersion(cfg,Tutor.class);
 		
 		ObjectContainer db=Db4oEmbedded.openFile(cfg,Utils.DB4OFILENAME);
 		db.close();
 		System.out.println("done!!!");
+	}
+	private static void dropClassesVersion(EmbeddedConfiguration cfg,Class<?> clzz)
+	{
+		System.out.print(clzz.getSimpleName()+"...");
+		cfg.common().objectClass(clzz).rename("rhp.trash."+clzz.getSimpleName());
 	}
 }
