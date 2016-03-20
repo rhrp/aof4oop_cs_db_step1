@@ -17,9 +17,8 @@ import rhp.aof4oop.cs.datamodel.Tutor;
  * @author rhp
  *
  */
-public class CreateDB {
-
-
+public class CreateDB
+{
 	public static void main(String[] args) throws Exception
 	{
 	
